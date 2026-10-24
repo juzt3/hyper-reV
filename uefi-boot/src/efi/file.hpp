@@ -28,28 +28,9 @@ namespace efi
 		file& operator=(const file&) = delete;
 
 		file(file&&) noexcept = default;
-		file& operator=(file&& other) noexcept
-		{
-			if (this != &other)
-			{
-				if (native_)
-				{
-					close();
-				}
+		file& operator=(file&& other) noexcept;
 
-				obj_wrap::operator=(static_cast<obj_wrap&&>(other));
-			}
-
-			return *this;
-		}
-
-		~file()
-		{
-			if (native_)
-			{
-				close();
-			}
-		}
+		~file();
 
 		// matches the spec
 		struct info
@@ -101,106 +82,23 @@ namespace efi
 			attr_archive = EFI_FILE_ARCHIVE
 		};
 
-		[[nodiscard]] cstd::expected<file, status> open(const cstd::wzstring_view name,
-		                                                const mode_base_t mode = mode_all,
-		                                                const attr_base_t attr = attr_file_system) const noexcept
-		{
-			EFI_FILE_PROTOCOL* root;
+		[[nodiscard]] cstd::expected<file, status> open(cstd::wzstring_view name,
+		                                                mode_base_t mode = mode_all,
+		                                                attr_base_t attr = attr_file_system) const noexcept;
 
-			const auto raw_name = const_cast<CHAR16*>(reinterpret_cast<const CHAR16*>(name.c_str()));
-			const status stat = native_->Open(native_, &root, raw_name, mode, attr);
+		status read(void* buf, std::size_t size) const noexcept;
+		status read(cstd::span<std::uint8_t> buf) const noexcept;
+		[[nodiscard]] cstd::expected<cstd::vector<std::uint8_t>, status> read() const noexcept;
 
-			if (!stat)
-				return cstd::unexpected(stat);
+		status write(const void* buf, std::size_t size) const noexcept;
+		status write(cstd::span<const std::uint8_t> buf) noexcept;
 
-			return file{ root };
-		}
+		status close() noexcept;
 
-		status read(void* const buf, const std::size_t size) const noexcept
-		{
-			UINTN s = static_cast<UINTN>(size);
+		[[nodiscard]] std::size_t size() const noexcept;
 
-			return status{ native_->Read(native_, &s, buf) };
-		}
-
-		status read(const cstd::span<std::uint8_t> buf) const noexcept
-		{
-			return read(buf.data(), buf.size());
-		}
-
-		[[nodiscard]] cstd::expected<cstd::vector<std::uint8_t>, status> read() const noexcept
-		{
-			cstd::vector<std::uint8_t> buf(size());
-
-			const status stat = read(buf);
-
-			if (!stat)
-				return cstd::unexpected(stat);
-
-			return buf;
-		}
-
-		status write(const void* const buf, const std::size_t size) noexcept
-		{
-			UINTN s = static_cast<UINTN>(size);
-
-			return status{ native_->Write(native_, &s, const_cast<void*>(buf)) };
-		}
-
-		status write(const cstd::span<const std::uint8_t> buf) noexcept
-		{
-			return write(buf.data(), buf.size());
-		}
-
-		status close() noexcept
-		{
-			const status stat{ native_->Close(native_) };
-
-			// the handle is invalid after Close, even on failure
-			native_ = nullptr;
-
-			return stat;
-		}
-
-		[[nodiscard]] std::size_t size() const noexcept
-		{
-			const auto info = get_info();
-
-			// todo: find some clean way of signalling
-			if (!info)
-				return 0;
-
-			return (*info)->file_size;
-		}
-
-		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept
-		{
-			EFI_GUID info_type = EFI_FILE_INFO_ID;
-
-			UINTN size = 0;
-
-			status stat = native_->GetInfo(native_, &info_type, &size, nullptr);
-
-			if (stat != buffer_too_small)
-			{
-				return cstd::unexpected(stat);
-			}
-
-			cstd::vector<std::uint8_t> buf(static_cast<std::size_t>(size));
-
-			stat = native_->GetInfo(native_, &info_type, &size, buf.data());
-
-			return info_holder{ cstd::move(buf) };
-		}
-
-		status set_info(const info_holder& info) const noexcept
-		{
-			EFI_GUID info_type = EFI_FILE_INFO_ID;
-
-			const auto buf = const_cast<std::uint8_t*>(info.buf.data());
-
-			return native_->SetInfo(native_, &info_type, info.buf.size(), buf);
-		}
+		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept;
+		status set_info(const info_holder& info) const noexcept;
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>
@@ -208,16 +106,6 @@ namespace efi
 	public:
 		using obj_wrap::obj_wrap;
 
-		[[nodiscard]] cstd::expected<file, status> volume() const noexcept
-		{
-			EFI_FILE_PROTOCOL* root;
-
-			const status status = native_->OpenVolume(native_, &root);
-
-			if (!status)
-				return cstd::unexpected(status);
-
-			return file{ root };
-		}
+		[[nodiscard]] cstd::expected<file, status> volume() const noexcept;
 	};
 }
