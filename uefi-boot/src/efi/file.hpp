@@ -2,6 +2,8 @@
 extern "C" {
 #include <Uefi.h>
 #include <Library/UefiLib.h>
+#include <Library/UefiBootServicesTableLib.h>
+#include <Protocol/SimpleFileSystem.h>
 #include <Guid/FileInfo.h>
 }
 
@@ -107,5 +109,56 @@ namespace efi
 		using obj_wrap::obj_wrap;
 
 		[[nodiscard]] cstd::expected<file, status> volume() const noexcept;
+
+		// calls fn(file_system& fs, EFI_HANDLE handle) for every file system the firmware exposes,
+		// stopping early if fn returns true. handles without the protocol are skipped
+		template <class Fn>
+		static status foreach(Fn&& fn) noexcept
+		{
+			EFI_HANDLE* handles = nullptr;
+			UINTN count = 0;
+
+			status stat = gBS->LocateHandleBuffer(ByProtocol, &gEfiSimpleFileSystemProtocolGuid,
+			                                            nullptr, &count, &handles);
+
+			if (!stat)
+				return stat;
+
+			for (UINTN i = 0; i < count; i++)
+			{
+				EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* native = nullptr;
+
+				stat = gBS->HandleProtocol(handles[i], &gEfiSimpleFileSystemProtocolGuid,
+					reinterpret_cast<void**>(&native));
+
+				if (!stat)
+					continue;
+
+				file_system fs{ native };
+
+				if (fn(fs, handles[i]))
+					break;
+			}
+
+			gBS->FreePool(handles);
+
+			return success;
+		}
+
+		// calls fn(file& root, EFI_HANDLE handle) for every volume, stopping early if fn returns true.
+		// volumes that fail to open are skipped
+		template <class Fn>
+		static status foreach_vol(Fn&& fn) noexcept
+		{
+			return foreach([&fn](file_system& fs, const EFI_HANDLE handle)
+			{
+				auto vol = fs.volume();
+
+				if (!vol)
+					return false;
+
+				return static_cast<bool>(fn(*vol, handle));
+			});
+		}
 	};
 }
