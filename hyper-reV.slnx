@@ -1,1 +1,3 @@
-<Solution />
+<Solution>
+  <Project Path="uefi-boot/uefi-boot.vcxproj" Id="a8c03eeb-3fe7-4eab-b1f8-273a441bc8b9" />
+</Solution>
