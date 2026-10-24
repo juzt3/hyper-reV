@@ -37,8 +37,9 @@ namespace efi
 			attr_archive = EFI_FILE_ARCHIVE
 		};
 
-		[[nodiscard]] cstd::expected<file, status> open(const cstd::wzstring_view name, const mode_base_t mode,
-		                                                const attr_base_t attr) const noexcept
+		[[nodiscard]] cstd::expected<file, status> open(const cstd::wzstring_view name,
+		                                                const mode_base_t mode = mode_all,
+		                                                const attr_base_t attr = attr_file_system) const noexcept
 		{
 			EFI_FILE_PROTOCOL* root;
 
