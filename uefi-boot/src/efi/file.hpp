@@ -80,10 +80,10 @@ namespace efi
 			EFI_FILE_PROTOCOL* root;
 
 			const auto raw_name = const_cast<CHAR16*>(reinterpret_cast<const CHAR16*>(name.c_str()));
-			const status status = native_->Open(native_, &root, raw_name, mode, attr);
+			const status stat = native_->Open(native_, &root, raw_name, mode, attr);
 
-			if (!status)
-				return cstd::unexpected(status);
+			if (!stat)
+				return cstd::unexpected(stat);
 
 			return file{ root };
 		}
@@ -112,7 +112,34 @@ namespace efi
 			return write(buf.data(), buf.size());
 		}
 
+		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept
+		{
+			EFI_GUID info_type = EFI_FILE_INFO_ID;
 
+			UINTN size = 0;
+
+			status stat = native_->GetInfo(native_, &info_type, &size, nullptr);
+
+			if (stat != buffer_too_small)
+			{
+				return cstd::unexpected(stat);
+			}
+
+			cstd::vector<std::uint8_t> buf(static_cast<std::size_t>(size));
+
+			stat = native_->GetInfo(native_, &info_type, &size, buf.data());
+
+			return info_holder{ cstd::move(buf) };
+		}
+
+		status set_info(const info_holder& info) const noexcept
+		{
+			EFI_GUID info_type = EFI_FILE_INFO_ID;
+
+			const auto buf = const_cast<std::uint8_t*>(info.buf.data());
+
+			return native_->SetInfo(native_, &info_type, info.buf.size(), buf);
+		}
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>
