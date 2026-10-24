@@ -23,6 +23,14 @@ namespace efi
 		using mode_base_t = std::uint64_t;
 		using attr_base_t = std::uint64_t;
 
+		~file()
+		{
+			if (native_)
+			{
+				close();
+			}
+		}
+
 		// matches the spec
 		struct info
 		{
@@ -122,6 +130,11 @@ namespace efi
 		status write(const cstd::span<const std::uint8_t> buf) noexcept
 		{
 			return write(buf.data(), buf.size());
+		}
+
+		status close() noexcept
+		{
+			return status{ native_->Close(native_) };
 		}
 
 		[[nodiscard]] std::size_t size() const noexcept
