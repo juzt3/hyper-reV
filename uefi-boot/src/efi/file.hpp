@@ -98,7 +98,7 @@ namespace efi
 		[[nodiscard]] std::size_t size() const noexcept;
 
 		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept;
-		status set_info(const info_holder& info) const noexcept;
+		status set_info(const info_holder& info) noexcept;
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>

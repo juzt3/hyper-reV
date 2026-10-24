@@ -114,7 +114,7 @@ cstd::expected<efi::file::info_holder, efi::status> efi::file::get_info() const 
 	return info_holder{ cstd::move(buf) };
 }
 
-efi::status efi::file::set_info(const info_holder& info) const noexcept
+efi::status efi::file::set_info(const info_holder& info) noexcept
 {
 	EFI_GUID info_type = EFI_FILE_INFO_ID;
 
