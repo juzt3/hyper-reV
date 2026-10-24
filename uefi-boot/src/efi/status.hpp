@@ -35,4 +35,8 @@ namespace efi
 
 	inline constexpr status success = EFI_SUCCESS;
 	inline constexpr status buffer_too_small = EFI_BUFFER_TOO_SMALL;
+	inline constexpr status not_found = EFI_NOT_FOUND;
+	inline constexpr status out_of_resources = EFI_OUT_OF_RESOURCES;
+	inline constexpr status no_media = EFI_NO_MEDIA;
+	inline constexpr status aborted = EFI_ABORTED;
 }
