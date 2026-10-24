@@ -100,6 +100,18 @@ namespace efi
 			return read(buf.data(), buf.size());
 		}
 
+		[[nodiscard]] cstd::expected<cstd::vector<std::uint8_t>, status> read() const noexcept
+		{
+			cstd::vector<std::uint8_t> buf(size());
+
+			const status stat = read(buf);
+
+			if (!stat)
+				return cstd::unexpected(stat);
+
+			return buf;
+		}
+
 		status write(const void* const buf, const std::size_t size) noexcept
 		{
 			UINTN s = static_cast<UINTN>(size);
