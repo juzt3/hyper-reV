@@ -7,7 +7,7 @@ extern "C" {
 
 extern "C" CONST UINT8 _gDriverUnloadImageCount = 1;
 extern "C" CONST UINT32 _gUefiDriverRevision = 0x200;
-extern "C" CHAR8 *gEfiCallerBaseName = "hyper-reV";
+extern "C" CHAR8* gEfiCallerBaseName = "hyper-reV";
 
 extern "C"
 EFI_STATUS

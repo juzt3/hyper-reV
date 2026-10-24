@@ -27,5 +27,4 @@ namespace efi
 	protected:
 		value_type value_;
 	};
-
 }

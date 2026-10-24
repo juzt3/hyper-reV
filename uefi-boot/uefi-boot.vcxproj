@@ -12,10 +12,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\deps\pe_deps.hpp" />
+    <ClInclude Include="src\efi\file.hpp" />
+    <ClInclude Include="src\efi\obj.hpp" />
+    <ClInclude Include="src\efi\status.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{a8c03eeb-3fe7-4eab-b1f8-273a441bc8b9}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(ProjectDir)\uefi.default.props" />
@@ -30,5 +34,8 @@
       <AdditionalDependencies>UefiDriverEntryPoint.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EFI Application</SubSystem>
     </Link>
+    <ClCompile>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
 </Project>
