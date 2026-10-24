@@ -23,6 +23,26 @@ namespace efi
 		using mode_base_t = std::uint64_t;
 		using attr_base_t = std::uint64_t;
 
+		// owns the handle, so it is move-only
+		file(const file&) = delete;
+		file& operator=(const file&) = delete;
+
+		file(file&&) noexcept = default;
+		file& operator=(file&& other) noexcept
+		{
+			if (this != &other)
+			{
+				if (native_)
+				{
+					close();
+				}
+
+				obj_wrap::operator=(static_cast<obj_wrap&&>(other));
+			}
+
+			return *this;
+		}
+
 		~file()
 		{
 			if (native_)
@@ -134,7 +154,12 @@ namespace efi
 
 		status close() noexcept
 		{
-			return status{ native_->Close(native_) };
+			const status stat{ native_->Close(native_) };
+
+			// the handle is invalid after Close, even on failure
+			native_ = nullptr;
+
+			return stat;
 		}
 
 		[[nodiscard]] std::size_t size() const noexcept
