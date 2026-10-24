@@ -10,6 +10,7 @@ extern "C" {
 #include "obj.hpp"
 #include "status.hpp"
 #include <expected.hpp>
+#include <optional.hpp>
 #include <string_view.hpp>
 #include <span.hpp>
 #include <cstdint>
@@ -72,6 +73,8 @@ namespace efi
 			mode_read = EFI_FILE_MODE_READ,	
 			mode_write = EFI_FILE_MODE_WRITE,	
 			mode_create = EFI_FILE_MODE_CREATE,
+
+			mode_read_write = mode_read | mode_write,
 			mode_all = mode_read | mode_write | mode_create
 		};
 
@@ -101,6 +104,9 @@ namespace efi
 
 		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept;
 		status set_info(const info_holder& info) noexcept;
+
+		// searches all volumes
+		static cstd::optional<file> find(cstd::wzstring_view path, mode mode = mode_all, attr attr = attr_file_system);
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>
@@ -110,7 +116,7 @@ namespace efi
 
 		[[nodiscard]] cstd::expected<file, status> volume() const noexcept;
 
-		// calls fn(file_system& fs, EFI_HANDLE handle) for every file system the firmware exposes,
+		// calls fn(file_system& fs) for every file system the firmware exposes,
 		// stopping early if fn returns true. handles without the protocol are skipped
 		template <class Fn>
 		static status foreach(Fn&& fn) noexcept
@@ -136,7 +142,7 @@ namespace efi
 
 				file_system fs{ native };
 
-				if (fn(fs, handles[i]))
+				if (fn(fs))
 					break;
 			}
 
@@ -145,19 +151,19 @@ namespace efi
 			return success;
 		}
 
-		// calls fn(file& root, EFI_HANDLE handle) for every volume, stopping early if fn returns true.
+		// calls fn(file& root) for every volume, stopping early if fn returns true.
 		// volumes that fail to open are skipped
 		template <class Fn>
 		static status foreach_vol(Fn&& fn) noexcept
 		{
-			return foreach([&fn](file_system& fs, const EFI_HANDLE handle)
+			return foreach([&fn](file_system& fs)
 			{
 				auto vol = fs.volume();
 
 				if (!vol)
 					return false;
 
-				return static_cast<bool>(fn(*vol, handle));
+				return static_cast<bool>(fn(*vol));
 			});
 		}
 	};

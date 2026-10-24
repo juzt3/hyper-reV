@@ -123,6 +123,27 @@ efi::status efi::file::set_info(const info_holder& info) noexcept
 	return native_->SetInfo(native_, &info_type, info.buf.size(), buf);
 }
 
+cstd::optional<efi::file> efi::file::find(const cstd::wzstring_view path, const mode mode, const attr attr)
+{
+	cstd::optional<file> result = cstd::nullopt;
+
+	file_system::foreach_vol(
+		[&](file& root)
+		{
+			auto curr = root.open(path, mode, attr);
+
+			if (!curr)
+				return false;
+
+			result = cstd::move(*curr);
+
+			return true;
+		}
+	);
+
+	return result;
+}
+
 cstd::expected<efi::file, efi::status> efi::file_system::volume() const noexcept
 {
 	EFI_FILE_PROTOCOL* root;
