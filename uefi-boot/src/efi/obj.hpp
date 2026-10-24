@@ -1,4 +1,7 @@
 #pragma once
+extern "C" {
+#include <Uefi.h>
+}
 
 namespace efi
 {
@@ -18,4 +21,6 @@ namespace efi
 	protected:
 		T* native_;
 	};
+
+	using handle_obj = obj_wrap<EFI_HANDLE>;
 }
