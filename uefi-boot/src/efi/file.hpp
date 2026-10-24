@@ -112,6 +112,17 @@ namespace efi
 			return write(buf.data(), buf.size());
 		}
 
+		[[nodiscard]] std::size_t size() const noexcept
+		{
+			const auto info = get_info();
+
+			// todo: find some clean way of signalling
+			if (!info)
+				return 0;
+
+			return (*info)->file_size;
+		}
+
 		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept
 		{
 			EFI_GUID info_type = EFI_FILE_INFO_ID;
