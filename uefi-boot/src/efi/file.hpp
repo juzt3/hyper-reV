@@ -2,6 +2,7 @@
 extern "C" {
 #include <Uefi.h>
 #include <Library/UefiLib.h>
+#include <Guid/FileInfo.h>
 }
 
 #include "obj.hpp"
@@ -21,6 +22,39 @@ namespace efi
 
 		using mode_base_t = std::uint64_t;
 		using attr_base_t = std::uint64_t;
+
+		// matches the spec
+		struct info
+		{
+			std::uint64_t size_of_info;
+			std::uint64_t file_size;
+			std::uint64_t physical_size;
+			EFI_TIME create_time;
+			EFI_TIME last_access_time;
+			EFI_TIME modification_time;
+			std::uint64_t attribute;
+			CHAR16 file_name_raw[1];
+
+			[[nodiscard]] cstd::wzstring_view file_name() const noexcept
+			{
+				return cstd::wzstring_view{ reinterpret_cast<const wchar_t*>(file_name_raw) };
+			}
+		};
+
+		struct info_holder
+		{
+			cstd::vector<std::uint8_t> buf;
+
+			[[nodiscard]] info* operator->() noexcept
+			{
+				return reinterpret_cast<info*>(buf.data());
+			}
+
+			[[nodiscard]] const info* operator->() const noexcept
+			{
+				return reinterpret_cast<const info*>(buf.data());
+			}
+		};
 
 		enum mode : mode_base_t
 		{
@@ -77,6 +111,8 @@ namespace efi
 		{
 			return write(buf.data(), buf.size());
 		}
+
+
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>
