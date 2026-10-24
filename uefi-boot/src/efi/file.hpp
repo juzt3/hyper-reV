@@ -8,7 +8,9 @@ extern "C" {
 #include "status.hpp"
 #include <expected.hpp>
 #include <string_view.hpp>
+#include <span.hpp>
 #include <cstdint>
+#include <cstddef>
 
 namespace efi
 {
@@ -50,6 +52,30 @@ namespace efi
 				return cstd::unexpected(status);
 
 			return file{ root };
+		}
+
+		status read(void* const buf, const std::size_t size) const noexcept
+		{
+			UINTN s = static_cast<UINTN>(size);
+
+			return status{ native_->Read(native_, &s, buf) };
+		}
+
+		status read(const cstd::span<std::uint8_t> buf) const noexcept
+		{
+			return read(buf.data(), buf.size());
+		}
+
+		status write(const void* const buf, const std::size_t size) noexcept
+		{
+			UINTN s = static_cast<UINTN>(size);
+
+			return status{ native_->Write(native_, &s, const_cast<void*>(buf)) };
+		}
+
+		status write(const cstd::span<const std::uint8_t> buf) noexcept
+		{
+			return write(buf.data(), buf.size());
 		}
 	};
 
