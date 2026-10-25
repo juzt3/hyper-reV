@@ -99,6 +99,7 @@ namespace efi
 		status write(cstd::span<const std::uint8_t> buf) noexcept;
 
 		status close() noexcept;
+		status delete_() noexcept;
 
 		[[nodiscard]] std::size_t size() const noexcept;
 

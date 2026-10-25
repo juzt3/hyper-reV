@@ -83,6 +83,16 @@ efi::status efi::file::close() noexcept
 	return stat;
 }
 
+efi::status efi::file::delete_() noexcept
+{
+	const status stat{ native_->Delete(native_) };
+
+	// the handle is invalid after Delete, even on failure
+	native_ = nullptr;
+
+	return stat;
+}
+
 std::size_t efi::file::size() const noexcept
 {
 	const auto info = get_info();
