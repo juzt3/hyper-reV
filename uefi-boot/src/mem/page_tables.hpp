@@ -1,9 +1,9 @@
 #pragma once
 #include "../arch/cpu.hpp"
 
-namespace mem
+namespace mem::pt
 {
-	void setup_identity_map();
+	void init();
 
 	::cr3 identity_cr3();
 }

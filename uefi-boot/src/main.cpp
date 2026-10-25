@@ -1,12 +1,13 @@
+#include "mem/mem.hpp"
+#include "bootmgfw/bootmgfw.hpp"
+#include "efi/status.hpp"
+
 extern "C" {
 #include "../../vendor/edk2/build/BaseLib/vshacks.h"
 #include <Uefi.h>
 #include <Library/UefiLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 }
-
-#include "bootmgfw/bootmgfw.hpp"
-#include "efi/status.hpp"
 
 extern "C" CONST UINT8 _gDriverUnloadImageCount = 1;
 extern "C" CONST UINT32 _gUefiDriverRevision = 0x200;
@@ -31,5 +32,10 @@ UefiMain (
     IN EFI_SYSTEM_TABLE* SystemTable
     )
 {
+    const efi::status stat = mem::init();
+
+    if (!stat)
+        return stat;
+
     return bootmgfw::restore_and_start_hooked();
 }

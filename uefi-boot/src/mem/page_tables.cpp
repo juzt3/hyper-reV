@@ -6,7 +6,7 @@ namespace
 	::cr3 identity_cr3 = { };
 }
 
-void mem::setup_identity_map()
+void mem::pt::init()
 {
 	const phys_addr pml4_base = heap::alloc_pages(1);
 	const phys_addr pdpt_base = heap::alloc_pages(1);
@@ -32,7 +32,7 @@ void mem::setup_identity_map()
 	::identity_cr3.address_of_page_directory = pml4_base >> page_shift;
 }
 
-::cr3 mem::identity_cr3()
+::cr3 mem::pt::identity_cr3()
 {
 	return ::identity_cr3;
 }
