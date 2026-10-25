@@ -21,6 +21,17 @@ namespace util
 	}
 
 	template <class T = std::uint8_t*>
+	[[nodiscard]] T scan_rel(pe::image* const img, const cstd::string_view sig, const std::uint32_t rva_off, const std::uint32_t rip_off)
+	{
+		const auto base = img->sig_scan(sig);
+
+		if (!base)
+			return T{ };
+
+		return resolve_rel<T>(base, rva_off, rip_off);
+	}
+
+	template <class T = const std::uint8_t*>
 	[[nodiscard]] T scan_rel(const pe::image* const img, const cstd::string_view sig, const std::uint32_t rva_off, const std::uint32_t rip_off)
 	{
 		const auto base = img->sig_scan(sig);
