@@ -5,7 +5,10 @@ extern "C" {
 #include <Library/MemoryAllocationLib.h>
 }
 
+#include <intrin.h>
 #include <crt.hpp>
+
+#include "../arch/cpu.hpp"
 
 namespace cstd::crt
 {
@@ -24,12 +27,14 @@ namespace cstd::crt
 
 	void memcpy(void* destination, const void* source, size_t size)
 	{
-		CopyMem(destination, source, static_cast<UINTN>(size));
+		const arch::wp_guard guard;
+		__movsb(static_cast<unsigned char*>(destination), static_cast<const unsigned char*>(source), size);
 	}
 
 	void memset(void* destination, int32_t value, size_t size)
 	{
-		SetMem(destination, static_cast<UINTN>(size), static_cast<UINT8>(value));
+		const arch::wp_guard guard;
+		__stosb(static_cast<unsigned char*>(destination), static_cast<unsigned char>(value), size);
 	}
 }
 
