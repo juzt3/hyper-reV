@@ -51,7 +51,12 @@ namespace efi
 			return inf;
 		}
 
-		static cstd::expected<image, status> load(const cstd::span<const std::uint8_t> buf)
+		static image curr() noexcept
+		{
+			return image{ gImageHandle };
+		}
+
+		static cstd::expected<image, status> load(const cstd::span<const std::uint8_t> buf) noexcept
 		{
 			EFI_HANDLE img_handle = nullptr;
 
@@ -64,5 +69,9 @@ namespace efi
 			return image{ img_handle };
 		}
 
+		status start() noexcept
+		{
+			return gBS->StartImage(native_, nullptr, nullptr);
+		}
 	};
 }
