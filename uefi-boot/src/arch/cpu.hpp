@@ -36,6 +36,11 @@ namespace arch
 			set_cr0(orig_val);
 		}
 
+		wp_guard(const wp_guard&) = delete;
+		wp_guard& operator=(const wp_guard&) = delete;
+		wp_guard(wp_guard&&) = delete;
+		wp_guard& operator=(wp_guard&&) = delete;
+
 		::cr0 orig_val;
 	};
 
