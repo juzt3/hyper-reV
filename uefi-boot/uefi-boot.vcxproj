@@ -14,6 +14,7 @@
   <ItemGroup>
     <ClInclude Include="src\deps\pe_deps.hpp" />
     <ClInclude Include="src\efi\file.hpp" />
+    <ClInclude Include="src\efi\image.hpp" />
     <ClInclude Include="src\efi\obj.hpp" />
     <ClInclude Include="src\efi\status.hpp" />
   </ItemGroup>
