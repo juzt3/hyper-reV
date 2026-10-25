@@ -17,7 +17,7 @@ struct bl_file_info
 using load_pe_img_fn = std::uint64_t(*)(
 	bl_file_info* file_info,
 	std::int32_t a2,
-	pe::image* img,
+	pe::image** img,
 	std::uint32_t* img_size,
 	std::uint64_t* a5,
 	std::uint32_t* a6,

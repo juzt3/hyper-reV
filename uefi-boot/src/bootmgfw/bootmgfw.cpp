@@ -51,7 +51,7 @@ namespace
         return orig_file.delete_();
 	}
 
-    std::uint64_t load_pe_image_detour(bl_file_info* file_info, std::int32_t a2, pe::image* img,
+    std::uint64_t load_pe_image_detour(bl_file_info* file_info, std::int32_t a2, pe::image** img,
                                        std::uint32_t* img_size, std::uint64_t* a5, std::uint32_t* a6, std::uint32_t* a7,
                                        std::uint64_t a8, std::uint64_t a9, std::uint64_t a10, std::uint64_t a11,
                                        std::uint64_t a12, std::uint64_t a13, std::uint64_t a14,
@@ -62,7 +62,7 @@ namespace
         const auto ret_val = load_pe_image_hk.target<load_pe_img_fn>()(file_info, a2, img, img_size, a5, a6, a7, a8, a9, a10,
                                                                  a11, a12, a13, a14, a15);
 
-        if (file_info->name() == L"winload.efi")
+        if (file_info->name().contains(L"winload.efi"))
         {
 	        // place hooks on winload
         }
