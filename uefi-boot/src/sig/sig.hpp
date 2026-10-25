@@ -19,6 +19,15 @@ namespace sig
 		cstd::optional<rel> rel;
 
 		template <class T = std::uint8_t*>
+		[[nodiscard]] T find(pe::image* const img) const noexcept
+		{
+			if (rel)
+				return util::scan_rel(img, pattern, rel->rva_off, rel->rip_off);
+
+			return img->sig_scan<T>(pattern);
+		}
+
+		template <class T = const std::uint8_t*>
 		[[nodiscard]] T find(const pe::image* const img) const noexcept
 		{
 			if (rel)
@@ -29,8 +38,8 @@ namespace sig
 	};
 
 	// ImgpLoadPeImage
-	constexpr info load_pe_img = {
-		.pattern = "48 89 44 24 ? E8 ? ? ? ? 8B D8 EB ? BB ? ? ? ? 48 8B",
-		.rel = rel{ .rva_off = 6, .rip_off = 10 }
+	inline constexpr info load_pe_img{
+		"48 89 44 24 ? E8 ? ? ? ? 8B D8 EB ? BB ? ? ? ? 48 8B",
+		rel{ .rva_off = 6, .rip_off = 10 }
 	};
 }
