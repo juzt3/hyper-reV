@@ -3,5 +3,5 @@
 
 namespace bootmgfw
 {
-	efi::status restore_and_start();
+	efi::status restore_and_start_hooked();
 }
