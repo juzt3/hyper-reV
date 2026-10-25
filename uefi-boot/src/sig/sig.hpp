@@ -2,6 +2,8 @@
 #include <optional.hpp>
 #include <cstddef>
 
+#include "../util/scan.hpp"
+
 namespace sig
 {
 	struct rel
@@ -15,6 +17,15 @@ namespace sig
 	{
 		char pattern[N];
 		cstd::optional<rel> rel;
+
+		template <class T = std::uint8_t*>
+		[[nodiscard]] T find(const pe::image* const img) const noexcept
+		{
+			if (rel)
+				return util::scan_rel(img, pattern, rel->rva_off, rel->rip_off);
+
+			return img->sig_scan<T>(pattern);
+		}
 	};
 
 	// ImgpLoadPeImage
