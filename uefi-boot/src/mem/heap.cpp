@@ -52,6 +52,11 @@ efi::status mem::heap::init() noexcept
 	return efi::success;
 }
 
+phys_addr mem::heap::alloc_page() noexcept
+{
+	return alloc_pages(1);
+}
+
 phys_addr mem::heap::alloc_pages(const std::size_t count) noexcept
 {
 	const phys_addr addr = curr_heap;

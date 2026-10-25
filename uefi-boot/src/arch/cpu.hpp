@@ -2,6 +2,7 @@
 #include <ia32.hpp>
 #include <intrin.h>
 #include <cstdint>
+#include <cstddef>
 
 #pragma warning(push)
 #pragma warning(disable: 4201)
@@ -25,6 +26,8 @@ union virt_addr
 
 using phys_addr = std::uint64_t;
 constexpr std::size_t page_size = 0x1000;
+constexpr std::size_t page_shift = 12;
+constexpr std::size_t pte_count = 512;
 
 namespace arch
 {
