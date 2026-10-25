@@ -9,6 +9,7 @@ extern "C" {
 
 #include "obj.hpp"
 #include "status.hpp"
+#include <pe/image.hpp>
 #include <expected.hpp>
 #include <span.hpp>
 #include <cstdint>
@@ -69,6 +70,11 @@ namespace efi
 		[[nodiscard]] std::size_t size() const noexcept
 		{
 			return (*this)->image_size;
+		}
+
+		[[nodiscard]] pe::image* pe() const noexcept
+		{
+			return static_cast<pe::image*>(base_addr());
 		}
 
 		static image curr() noexcept
