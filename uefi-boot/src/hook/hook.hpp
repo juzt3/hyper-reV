@@ -44,6 +44,17 @@ public:
 		enable();
 	}
 
+	static hook create(void* const target, void* const detour)
+	{
+		return hook{ target, detour };
+	}
+
+	~hook()
+	{
+		if (target_)
+			disable();
+	}
+
 	void enable() noexcept
 	{
 		cstd::crt::memcpy(target_, stub_bytes_.data(), stub_size);
@@ -53,6 +64,13 @@ public:
 	{
 		cstd::crt::memcpy(target_, orig_bytes_.data(), stub_size);
 	}
+	
+	template <class T>
+	[[nodiscard]] T target() const noexcept
+	{
+		return reinterpret_cast<T>(target_);
+	}
+
 
 protected:
 	constexpr static std::size_t stub_size = 14;
