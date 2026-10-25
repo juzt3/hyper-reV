@@ -11,6 +11,8 @@
     <ClCompile Include="src\efi\file.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\deps\cstd_crt.cpp" />
+    <ClCompile Include="src\mem\heap.cpp" />
+    <ClCompile Include="src\mem\page_tables.cpp" />
     <ClCompile Include="src\winload\winload.cpp" />
     <ClCompile Include="src\hvloader\hvloader.cpp" />
   </ItemGroup>
@@ -25,6 +27,9 @@
     <ClInclude Include="src\efi\status.hpp" />
     <ClInclude Include="src\hook\hook.hpp" />
     <ClInclude Include="src\hook\load_pe_img.hpp" />
+    <ClInclude Include="src\mem\heap.hpp" />
+    <ClInclude Include="src\mem\mem.hpp" />
+    <ClInclude Include="src\mem\page_tables.hpp" />
     <ClInclude Include="src\sig\sig.hpp" />
     <ClInclude Include="src\util\scan.hpp" />
     <ClInclude Include="src\winload\winload.hpp" />
