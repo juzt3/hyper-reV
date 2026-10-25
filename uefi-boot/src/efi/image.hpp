@@ -10,6 +10,7 @@ extern "C" {
 #include "obj.hpp"
 #include "status.hpp"
 #include <expected.hpp>
+#include <span.hpp>
 #include <cstdint>
 
 namespace efi
@@ -42,12 +43,26 @@ namespace efi
 
 			struct info* inf = nullptr;
 
-			status stat = gBS->HandleProtocol(native_, &guid, reinterpret_cast<void**>(&inf));
+			const status stat = gBS->HandleProtocol(native_, &guid, reinterpret_cast<void**>(&inf));
 
 			if (!stat)
 				return cstd::unexpected(stat);
 
 			return inf;
 		}
+
+		static cstd::expected<image, status> load(const cstd::span<const std::uint8_t> buf)
+		{
+			EFI_HANDLE img_handle = nullptr;
+
+			const status stat = gBS->LoadImage(FALSE, gImageHandle, nullptr, const_cast<std::uint8_t*>(buf.data()),
+			                                   buf.size(), &img_handle);
+
+			if (!stat)
+				return cstd::unexpected(stat);
+
+			return image{ img_handle };
+		}
+
 	};
 }
