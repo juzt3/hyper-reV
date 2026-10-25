@@ -12,6 +12,7 @@ extern "C" {
 #include <expected.hpp>
 #include <span.hpp>
 #include <cstdint>
+#include <cstddef>
 
 namespace efi
 {
@@ -49,6 +50,25 @@ namespace efi
 				return cstd::unexpected(stat);
 
 			return inf;
+		}
+
+		[[nodiscard]] struct info* operator->() const noexcept
+		{
+			const auto inf = info();
+
+			// todo, handle inf being unexpected
+
+			return *inf;
+		}
+
+		[[nodiscard]] void* base_addr() const noexcept
+		{
+			return (*this)->image_base;
+		}
+
+		[[nodiscard]] std::size_t size() const noexcept
+		{
+			return (*this)->image_size;
 		}
 
 		static image curr() noexcept
