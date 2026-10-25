@@ -10,7 +10,7 @@ namespace efi
 	{
 	public:
 		obj_wrap() noexcept = default;
-		obj_wrap(T* native) noexcept
+		obj_wrap(T native) noexcept
 			:	native_(native) { }
 
 		obj_wrap(const obj_wrap&) noexcept = default;
@@ -34,14 +34,16 @@ namespace efi
 			return *this;
 		}
 
-		[[nodiscard]] T* native() const noexcept
+		[[nodiscard]] T native() const noexcept
 		{
 			return native_;
 		}
 
 	protected:
-		T* native_ = nullptr;
+		T native_ = nullptr;
 	};
 
-	using handle_obj = obj_wrap<EFI_HANDLE>;
+	using handle = EFI_HANDLE;
+
+	using handle_obj = obj_wrap<handle>;
 }

@@ -18,7 +18,7 @@ extern "C" {
 
 namespace efi
 {
-	class file : public obj_wrap<EFI_FILE_PROTOCOL>
+	class file : public obj_wrap<EFI_FILE_PROTOCOL*>
 	{
 	public:
 		using obj_wrap::obj_wrap;
@@ -109,7 +109,7 @@ namespace efi
 		static cstd::optional<file> find(cstd::wzstring_view path, mode mode = mode_all, attr attr = attr_file_system);
 	};
 
-	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL>
+	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL*>
 	{
 	public:
 		using obj_wrap::obj_wrap;
