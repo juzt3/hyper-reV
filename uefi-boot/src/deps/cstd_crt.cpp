@@ -33,6 +33,11 @@ namespace cstd::crt
 	}
 }
 
+extern "C" int atexit(void (*)()) noexcept
+{
+	return 0;
+}
+
 void* operator new(cstd::size_t size)
 {
 	void* buffer = cstd::crt::malloc(size);
