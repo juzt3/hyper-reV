@@ -89,6 +89,16 @@ namespace efi
 			return image{ img_handle };
 		}
 
+		static cstd::expected<image, status> load(const file& f) noexcept
+		{
+			const auto buf = f.read();
+
+			if (!buf)
+				return cstd::unexpected(buf.error());
+
+			return load(buf.value());
+		}
+
 		status start() noexcept
 		{
 			return gBS->StartImage(native_, nullptr, nullptr);
