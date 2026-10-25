@@ -33,7 +33,7 @@ namespace cstd::crt
 	}
 }
 
-extern "C" int atexit(void (*)()) noexcept
+extern "C" int atexit(void (*)())
 {
 	return 0;
 }

@@ -7,16 +7,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\bootmgfw\bootmgfw.cpp" />
     <ClCompile Include="src\efi\file.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\deps\cstd_crt.cpp" />
+    <ClCompile Include="src\winload\winload.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\bootmgfw\bootmgfw.hpp" />
     <ClInclude Include="src\deps\pe_deps.hpp" />
     <ClInclude Include="src\efi\file.hpp" />
     <ClInclude Include="src\efi\image.hpp" />
     <ClInclude Include="src\efi\obj.hpp" />
     <ClInclude Include="src\efi\status.hpp" />
+    <ClInclude Include="src\hook\hook.hpp" />
+    <ClInclude Include="src\hook\load_pe_img.hpp" />
+    <ClInclude Include="src\sig\sig.hpp" />
+    <ClInclude Include="src\util\scan.hpp" />
+    <ClInclude Include="src\winload\winload.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
@@ -31,6 +39,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
   <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)vendor\ia32-doc\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>UefiDriverEntryPoint.lib;%(AdditionalDependencies)</AdditionalDependencies>
