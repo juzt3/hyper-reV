@@ -5,6 +5,9 @@ extern "C" {
 #include <Library/UefiBootServicesTableLib.h>
 }
 
+#include "bootmgfw/bootmgfw.hpp"
+#include "efi/status.hpp"
+
 extern "C" CONST UINT8 _gDriverUnloadImageCount = 1;
 extern "C" CONST UINT32 _gUefiDriverRevision = 0x200;
 extern "C" CHAR8* gEfiCallerBaseName = "hyper-reV";
@@ -28,5 +31,5 @@ UefiMain (
     IN EFI_SYSTEM_TABLE* SystemTable
     )
 {
-    return EFI_SUCCESS;
+    return bootmgfw::restore_and_start_hooked();
 }
