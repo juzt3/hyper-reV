@@ -1,5 +1,9 @@
 #include "file.hpp"
 
+extern "C" {
+#include <Library/DebugLib.h>
+}
+
 efi::file& efi::file::operator=(file&& other) noexcept
 {
 	if (this != &other)
@@ -97,9 +101,7 @@ std::size_t efi::file::size() const noexcept
 {
 	const auto info = get_info();
 
-	// todo: find some clean way of signalling
-	if (!info)
-		return 0;
+	ASSERT(info.has_value());
 
 	return (*info)->file_size;
 }
