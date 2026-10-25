@@ -24,6 +24,7 @@ union virt_addr
 #pragma warning(pop)
 
 using phys_addr = std::uint64_t;
+constexpr std::size_t page_size = 0x1000;
 
 namespace arch
 {
