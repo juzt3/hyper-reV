@@ -14,6 +14,7 @@
     <ClCompile Include="src\winload\winload.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\arch\cpu.hpp" />
     <ClInclude Include="src\bootmgfw\bootmgfw.hpp" />
     <ClInclude Include="src\deps\pe_deps.hpp" />
     <ClInclude Include="src\efi\file.hpp" />
