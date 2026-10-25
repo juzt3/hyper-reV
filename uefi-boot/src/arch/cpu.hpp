@@ -23,6 +23,8 @@ union virt_addr
 
 #pragma warning(pop)
 
+using phys_addr = std::uint64_t;
+
 namespace arch
 {
 	inline ::cr0 cr0() noexcept
