@@ -6,6 +6,7 @@
 #include "../hook/hook.hpp"
 #include "../hook/load_pe_img.hpp"
 #include "../sig/sig.hpp"
+#include "../winload/winload.hpp"
 
 #define BOOTMGFW_PATH L"\\efi\\microsoft\\boot\\bootmgfw.efi"
 #define ORIG_BOOTMGFW_PATH L"\\efi\\microsoft\\boot\\bootmgfw.original.efi"
@@ -64,7 +65,7 @@ namespace
 
         if (file_info->name().contains(L"winload.efi"))
         {
-	        // place hooks on winload
+	        winload::place_hooks(*img);
         }
         else
         {
