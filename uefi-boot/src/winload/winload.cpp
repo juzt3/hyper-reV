@@ -1,6 +1,7 @@
 #include "winload.hpp"
 #include "../hook/hook.hpp"
 #include "../hook/load_pe_img.hpp"
+#include "../hvloader/hvloader.hpp"
 #include "../sig/sig.hpp"
 
 namespace
@@ -20,7 +21,7 @@ namespace
 
 		if (file_info->name().contains(L"hvloader"))
 		{
-			// place hooks on hvloader
+			hvloader::place_hooks(*img);
 		}
 		else
 		{

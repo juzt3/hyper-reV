@@ -42,4 +42,9 @@ namespace sig
 		"48 89 44 24 ? E8 ? ? ? ? 8B D8 EB ? BB ? ? ? ? 48 8B",
 		rel{ .rva_off = 6, .rip_off = 10 }
 	};
+
+	inline constexpr info hvloader_launch_hv{
+		"48 53 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ? 48 89 25",
+		cstd::nullopt
+	};
 }

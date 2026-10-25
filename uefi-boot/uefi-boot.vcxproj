@@ -12,10 +12,12 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\deps\cstd_crt.cpp" />
     <ClCompile Include="src\winload\winload.cpp" />
+    <ClCompile Include="src\hvloader\hvloader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\arch\cpu.hpp" />
     <ClInclude Include="src\bootmgfw\bootmgfw.hpp" />
+    <ClInclude Include="src\hvloader\hvloader.hpp" />
     <ClInclude Include="src\deps\pe_deps.hpp" />
     <ClInclude Include="src\efi\file.hpp" />
     <ClInclude Include="src\efi\image.hpp" />
