@@ -6,6 +6,17 @@
 
 namespace util
 {
+	void patch_rel(std::uint8_t* const base, const std::uint8_t* const new_target, const std::uint32_t rva_off,
+	               const std::uint32_t rip_off)
+	{
+		const auto rva = reinterpret_cast<std::int32_t*>(base + rva_off);
+		const auto rip = base + rip_off;
+
+		const std::int32_t expected_rva = static_cast<std::int32_t>(new_target - rip);
+
+		*rva = expected_rva;
+	}
+
 	template <class T = std::uint8_t*>
 	[[nodiscard]] T resolve_rel(const std::uint8_t* const base, const std::uint32_t rva_off, const std::uint32_t rip_off)
 	{

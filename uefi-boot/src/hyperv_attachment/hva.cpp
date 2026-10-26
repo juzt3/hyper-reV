@@ -74,11 +74,13 @@ efi::status hva::load_from_disk()
 	return efi::success;
 }
 
-void hva::call_entry_point()
+std::uint8_t* hva::call_entry_point()
 {
-	using entry_point_fn = void(*)();
+	using entry_point_fn = std::uint8_t* (*)();
 
 	const auto ep = reinterpret_cast<entry_point_fn>(hva_entry_point);
 
-	ep();
+	std::uint8_t* const vmexit_detour = ep();
+
+	return vmexit_detour;
 }

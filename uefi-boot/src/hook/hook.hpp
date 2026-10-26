@@ -49,12 +49,6 @@ public:
 		return hook{ target, detour };
 	}
 
-	~hook()
-	{
-		if (target_)
-			disable();
-	}
-
 	void enable() noexcept
 	{
 		cstd::crt::memcpy(target_, stub_bytes_.data(), stub_size);
