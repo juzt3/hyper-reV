@@ -34,7 +34,7 @@ UefiMain (
     IN EFI_SYSTEM_TABLE* SystemTable
     )
 {
-    efi::status stat = efi::find_boot_partition();
+    efi::status stat = efi::find_boot_info();
 
     if (!stat)
         return stat;

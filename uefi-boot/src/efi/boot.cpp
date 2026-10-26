@@ -7,9 +7,15 @@ extern "C" {
 #include <Protocol/SimpleFileSystem.h>
 }
 
-efi::status efi::find_boot_partition() noexcept
+efi::status efi::find_boot_info() noexcept
 {
-	const handle dev = image::curr()->device_handle;
+	const auto curr = image::curr();
+	const auto curr_info = curr.info();
+
+	if (!curr_info)
+		return curr_info.error();
+
+	const handle dev = (*curr_info)->device_handle;
 
 	EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* native = nullptr;
 
@@ -28,6 +34,8 @@ efi::status efi::find_boot_partition() noexcept
 
 	boot_partition = cstd::move(*vol);
 	boot_device = dev;
+	curr_phys_base = (*curr_info)->image_base;
+	curr_img_size = (*curr_info)->image_size;
 
 	return success;
 }
