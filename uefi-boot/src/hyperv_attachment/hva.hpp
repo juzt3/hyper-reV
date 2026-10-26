@@ -5,4 +5,6 @@
 namespace hva
 {
 	efi::status load_from_disk();
+
+	void call_entry_point();
 }
