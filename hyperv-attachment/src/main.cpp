@@ -1,4 +1,5 @@
 #include "arch/arch.h"
+#include "cpuid/cpuid.h"
 #include "hypercall/hypercall.h"
 #include "hypercall/hypercall_def.h"
 #include "memory_manager/memory_manager.h"
@@ -13,6 +14,7 @@
 #include "slat/slat.h"
 #include "slat/cr3/cr3.h"
 #include "slat/violation/violation.h"
+#include "smbios/smbios.h"
 
 #ifndef _INTELMACHINE
 #include <intrin.h>
@@ -44,6 +46,8 @@ void process_first_vmexit()
         slat::process_first_vmexit();
         interrupts::set_up();
 
+        smbios::spoof();
+
         clean_up_uefi_boot_image();
 
         is_first_vmexit = 0;
@@ -60,20 +64,37 @@ void process_first_vmexit()
     }
 }
 
-static std::uint8_t handle_vmexit(const std::uint64_t exit_reason, trap_frame_t* const trap_frame)
+static std::uint8_t handle_vmexit(const std::uint64_t exit_reason, const trap_frame_t* const trap_frame, trap_frame_t* const original_frame)
 {
     process_first_vmexit();
 
     if (arch::is_cpuid(exit_reason) == 1)
     {
-        const hypercall_info_t hypercall_info = { .value = trap_frame->rcx };
+        const hypercall_info_t hypercall_info = { .value = original_frame->rcx };
 
         if (hypercall_info.primary_key == hypercall_primary_key && hypercall_info.secondary_key == hypercall_secondary_key)
         {
-            hypercall::process(hypercall_info, trap_frame);
+            hypercall::process(hypercall_info, original_frame);
 
             return 1;
         }
+
+        const auto leaf = static_cast<std::uint32_t>(original_frame->rax);
+        const auto subleaf = static_cast<std::uint32_t>(original_frame->rcx);
+        const auto guest_rsp = original_frame->rsp;
+
+        // keep the real results for every register the spoof does not touch
+#ifdef _INTELMACHINE
+        *original_frame = *trap_frame;
+#else
+        original_frame->rax = arch::get_vmcb()->save_state.rax;
+#endif
+
+        original_frame->rsp = guest_rsp;
+
+        cpuid::spoof(original_frame, leaf, subleaf);
+
+        return 1;
     }
     else if (arch::is_slat_violation(exit_reason) == 1 && slat::violation::process() == 1)
     {
@@ -109,7 +130,7 @@ std::uint64_t vmexit_handler_detour(const std::uint64_t a1, const std::uint64_t 
 
     const std::uint64_t exit_reason = arch::get_vmexit_reason();
 
-    if (handle_vmexit(exit_reason, &original_frame))
+    if (handle_vmexit(exit_reason, trap_frame, &original_frame))
     {
         *trap_frame = original_frame;
 
