@@ -135,16 +135,6 @@ efi::status efi::file::set_info(const info_holder& info) noexcept
 	return native_->SetInfo(native_, &info_type, info.buf.size(), buf);
 }
 
-cstd::optional<efi::file> efi::file::find(const cstd::wzstring_view path, const mode mode, const attr attr) const noexcept
-{
-	auto curr = open(path, mode, attr);
-
-	if (!curr)
-		return cstd::nullopt;
-
-	return cstd::move(*curr);
-}
-
 cstd::optional<efi::file> efi::file::find(const cstd::wzstring_view path, const mode mode, const attr attr)
 {
 	cstd::optional<file> result = cstd::nullopt;

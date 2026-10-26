@@ -106,12 +106,6 @@ namespace efi
 		[[nodiscard]] cstd::expected<info_holder, status> get_info() const noexcept;
 		status set_info(const info_holder& info) noexcept;
 
-		// finds a file on this volume (this must be a root). same shape as the
-		// static find, so callers can use either without changing style
-		[[nodiscard]] cstd::optional<file> find(cstd::wzstring_view path,
-		                                        mode mode = mode_all,
-		                                        attr attr = attr_file_system) const noexcept;
-
 		// searches all volumes
 		static cstd::optional<file> find(cstd::wzstring_view path, mode mode = mode_all, attr attr = attr_file_system);
 	};

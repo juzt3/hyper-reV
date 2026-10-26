@@ -108,8 +108,8 @@ namespace
 
 efi::status bootmgfw::restore_and_start_hooked()
 {
-    auto orig_file = efi::boot_partition.find(ORIG_BOOTMGFW_PATH);
-    auto boot_file = efi::boot_partition.find(BOOTMGFW_PATH);
+    auto orig_file = efi::boot_partition.open(ORIG_BOOTMGFW_PATH);
+    auto boot_file = efi::boot_partition.open(BOOTMGFW_PATH);
 
     if (!orig_file || !boot_file)
         return efi::not_found;
