@@ -64,7 +64,7 @@ efi::status hyperv::place_hooks(pe::image* const img)
 	if (!vmexit_detour || !trampoline)
 		return efi::not_found;
 
-	hook_vmexit_handler(vmexit_detour, trampoline);
+	hook_vmexit_handler(vmexit_handler, trampoline);
 
 	return efi::success;
 }

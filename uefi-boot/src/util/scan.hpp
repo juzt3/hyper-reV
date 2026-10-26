@@ -1,26 +1,28 @@
 #pragma once
 #include <cstdint>
+#include <crt.hpp>
 #include <string_view.hpp>
 #include <type_traits.hpp>
 #include <pe/image.hpp>
 
 namespace util
 {
-	void patch_rel(std::uint8_t* const base, const std::uint8_t* const new_target, const std::uint32_t rva_off,
-	               const std::uint32_t rip_off)
+	inline void patch_rel(std::uint8_t* const base, const std::uint8_t* const new_target, const std::uint32_t rva_off,
+	                      const std::uint32_t rip_off)
 	{
-		const auto rva = reinterpret_cast<std::int32_t*>(base + rva_off);
 		const auto rip = base + rip_off;
 
 		const std::int32_t expected_rva = static_cast<std::int32_t>(new_target - rip);
 
-		*rva = expected_rva;
+		cstd::crt::memcpy(base + rva_off, &expected_rva, sizeof(expected_rva));
 	}
 
 	template <class T = std::uint8_t*>
 	[[nodiscard]] T resolve_rel(const std::uint8_t* const base, const std::uint32_t rva_off, const std::uint32_t rip_off)
 	{
-		const auto rva = *reinterpret_cast<const std::int32_t*>(base + rva_off);
+		std::int32_t rva;
+		cstd::crt::memcpy(&rva, base + rva_off, sizeof(rva));
+
 		const auto rip = reinterpret_cast<std::uintptr_t>(base + rip_off);
 
 		const auto addr = rip + rva;
