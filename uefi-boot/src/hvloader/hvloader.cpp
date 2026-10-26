@@ -1,5 +1,6 @@
 #include "hvloader.hpp"
 #include "../hook/hook.hpp"
+#include "../hyperv/hyperv.hpp"
 #include "../sig/sig.hpp"
 #include "../mem/page_tables.hpp"
 
@@ -66,7 +67,7 @@ namespace
 
 		const auto img = find_hyperv_base(hyperv_entry_point);
 
-		apply_hyperv_hooks(img);
+		hyperv::place_hooks(img);
 
 		partially_restore_page_tables(hyperv_cr3, orig_pml4e);
 

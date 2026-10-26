@@ -10,6 +10,7 @@
     <ClCompile Include="src\bootmgfw\bootmgfw.cpp" />
     <ClCompile Include="src\efi\boot.cpp" />
     <ClCompile Include="src\efi\file.cpp" />
+    <ClCompile Include="src\hyperv\hyperv.cpp" />
     <ClCompile Include="src\hyperv_attachment\hva.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\deps\cstd_crt.cpp" />
@@ -30,6 +31,7 @@
     <ClInclude Include="src\efi\status.hpp" />
     <ClInclude Include="src\hook\hook.hpp" />
     <ClInclude Include="src\hook\load_pe_img.hpp" />
+    <ClInclude Include="src\hyperv\hyperv.hpp" />
     <ClInclude Include="src\hyperv_attachment\hva.hpp" />
     <ClInclude Include="src\mem\heap.hpp" />
     <ClInclude Include="src\mem\mem.hpp" />
