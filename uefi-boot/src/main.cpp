@@ -2,6 +2,7 @@
 #include "bootmgfw/bootmgfw.hpp"
 #include "efi/boot.hpp"
 #include "efi/status.hpp"
+#include "hyperv_attachment/hva.hpp"
 
 extern "C" {
 #include "../../vendor/edk2/build/BaseLib/vshacks.h"
@@ -39,6 +40,11 @@ UefiMain (
         return stat;
 
     stat = mem::init();
+
+    if (!stat)
+        return stat;
+
+    stat = hva::load_from_disk();
 
     if (!stat)
         return stat;
