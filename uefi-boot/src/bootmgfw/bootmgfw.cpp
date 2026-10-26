@@ -1,4 +1,5 @@
 #include "bootmgfw.hpp"
+#include "../efi/boot.hpp"
 #include "../efi/file.hpp"
 #include <pe/image.hpp>
 
@@ -107,10 +108,10 @@ namespace
 
 efi::status bootmgfw::restore_and_start_hooked()
 {
-    auto boot_file = efi::file::find(BOOTMGFW_PATH);
-    auto orig_file = efi::file::find(ORIG_BOOTMGFW_PATH);
+    auto orig_file = efi::boot_partition.find(ORIG_BOOTMGFW_PATH);
+    auto boot_file = efi::boot_partition.find(BOOTMGFW_PATH);
 
-    if (!boot_file || !orig_file)
+    if (!orig_file || !boot_file)
         return efi::not_found;
 
     const efi::status stat = restore_file(*boot_file, *orig_file);

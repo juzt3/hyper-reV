@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\bootmgfw\bootmgfw.cpp" />
+    <ClCompile Include="src\efi\boot.cpp" />
     <ClCompile Include="src\efi\file.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\deps\cstd_crt.cpp" />
@@ -21,6 +22,7 @@
     <ClInclude Include="src\bootmgfw\bootmgfw.hpp" />
     <ClInclude Include="src\hvloader\hvloader.hpp" />
     <ClInclude Include="src\deps\pe_deps.hpp" />
+    <ClInclude Include="src\efi\boot.hpp" />
     <ClInclude Include="src\efi\file.hpp" />
     <ClInclude Include="src\efi\image.hpp" />
     <ClInclude Include="src\efi\obj.hpp" />

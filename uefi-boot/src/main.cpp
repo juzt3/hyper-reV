@@ -1,5 +1,6 @@
 #include "mem/mem.hpp"
 #include "bootmgfw/bootmgfw.hpp"
+#include "efi/boot.hpp"
 #include "efi/status.hpp"
 
 extern "C" {
@@ -32,7 +33,12 @@ UefiMain (
     IN EFI_SYSTEM_TABLE* SystemTable
     )
 {
-    const efi::status stat = mem::init();
+    efi::status stat = efi::find_boot_partition();
+
+    if (!stat)
+        return stat;
+
+    stat = mem::init();
 
     if (!stat)
         return stat;
