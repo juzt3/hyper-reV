@@ -114,12 +114,6 @@ namespace efi
 
 		// searches all volumes
 		static cstd::optional<file> find(cstd::wzstring_view path, mode mode = mode_all, attr attr = attr_file_system);
-
-		// like find, but also writes the volume root the file was opened from into vol,
-		// so sibling files can be resolved on the same volume via vol.find(...)
-		static cstd::optional<file> find_with_vol(cstd::wzstring_view path, file& vol,
-		                                          mode mode = mode_all,
-		                                          attr attr = attr_file_system);
 	};
 
 	class file_system : public obj_wrap<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL*>
