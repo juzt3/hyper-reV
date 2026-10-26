@@ -135,19 +135,37 @@ efi::status efi::file::set_info(const info_holder& info) noexcept
 	return native_->SetInfo(native_, &info_type, info.buf.size(), buf);
 }
 
+cstd::optional<efi::file> efi::file::find(const cstd::wzstring_view path, const mode mode, const attr attr) const noexcept
+{
+	auto curr = open(path, mode, attr);
+
+	if (!curr)
+		return cstd::nullopt;
+
+	return cstd::move(*curr);
+}
+
 cstd::optional<efi::file> efi::file::find(const cstd::wzstring_view path, const mode mode, const attr attr)
+{
+	file vol;
+
+	return find_with_vol(path, vol, mode, attr);
+}
+
+cstd::optional<efi::file> efi::file::find_with_vol(const cstd::wzstring_view path, file& vol, const mode mode, const attr attr)
 {
 	cstd::optional<file> result = cstd::nullopt;
 
 	file_system::foreach_vol(
 		[&](file& root)
 		{
-			auto curr = root.open(path, mode, attr);
+			auto curr = root.find(path, mode, attr);
 
 			if (!curr)
 				return false;
 
 			result = cstd::move(*curr);
+			vol = cstd::move(root);
 
 			return true;
 		}
