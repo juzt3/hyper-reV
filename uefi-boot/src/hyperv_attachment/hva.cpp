@@ -1,4 +1,5 @@
 #include "hva.hpp"
+#include "../hvloader/hvloader.hpp"
 #include "../arch/cpu.hpp"
 #include "../efi/boot.hpp"
 #include "../mem/heap.hpp"
@@ -9,6 +10,8 @@
 
 namespace
 {
+	std::uintptr_t hva_entry_point = 0;
+
 	cstd::expected<cstd::vector<std::uint8_t>, efi::status> read_and_delete() noexcept
 	{
 		auto file = efi::boot_partition.open(HVA_PATH);
@@ -23,7 +26,8 @@ namespace
 		return file_buf;
 	}
 
-	void alloc_and_map(const pe::image* const file_img)
+	// returns entry point
+	std::uintptr_t alloc_and_map(const pe::image* const file_img)
 	{
 		const phys_addr base_addr = mem::heap::alloc_page_aligned(file_img->size());
 		const auto virt_img = reinterpret_cast<pe::image*>(base_addr);
@@ -40,7 +44,9 @@ namespace
 			cstd::crt::memcpy(dest, src, sec.size_of_raw_data);
 		}
 
-		const std::uintptr_t delta = virt_img->as<std::uintptr_t>() - file_img->base_addr();
+		const std::uintptr_t hva_base = hvloader::hyperv_mapping_base() + base_addr;
+
+		const std::uintptr_t delta = hva_base - file_img->base_addr();
 
 		for (const auto reloc : file_img->relocs())
 		{
@@ -49,6 +55,8 @@ namespace
 
 			*reinterpret_cast<std::uintptr_t*>(virt_img->as() + reloc.loc.rva()) += delta;
 		}
+
+		return hva_base + virt_img->entry_point();
 	}
 }
 
@@ -61,7 +69,7 @@ efi::status hva::load_from_disk()
 
 	const auto file_img = reinterpret_cast<const pe::image*>(file_buf->data());
 
-	alloc_and_map(file_img);
+	hva_entry_point = alloc_and_map(file_img);
 
 	return efi::success;
 }

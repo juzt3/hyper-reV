@@ -1,7 +1,6 @@
 #include "hvloader.hpp"
 #include "../hook/hook.hpp"
 #include "../sig/sig.hpp"
-#include "../arch/cpu.hpp"
 #include "../mem/page_tables.hpp"
 
 using launch_hv_fn = void(*)(::cr3, void*, void*, ::cr3);
@@ -13,14 +12,12 @@ namespace
 	// returns 0th pml4e (overwritten by us, not meant to persist)
 	pml4e_64 populate_page_tables(const cr3 hyperv_cr3) noexcept
 	{
-		constexpr std::size_t hyperv_pml4e_idx = 255;
-
 		// 0 will get wiped later, its just so the addr
 		// space of the uefi driver stays mapped whilst we run the hook
 		const pml4e_64 orig_pml4e = mem::pt::insert_identity_pml4e(hyperv_cr3, 0);
 
 		// this pml4e will persist, 0 will not
-		mem::pt::insert_identity_pml4e(hyperv_cr3, hyperv_pml4e_idx);
+		mem::pt::insert_identity_pml4e(hyperv_cr3, hvloader::hyperv_pml4e_idx);
 
 		return orig_pml4e;
 	}
