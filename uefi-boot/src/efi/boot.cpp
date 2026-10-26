@@ -9,9 +9,11 @@ extern "C" {
 
 efi::status efi::find_boot_partition() noexcept
 {
+	const handle dev = image::curr()->device_handle;
+
 	EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* native = nullptr;
 
-	const status stat = gBS->HandleProtocol(image::curr()->device_handle, &gEfiSimpleFileSystemProtocolGuid,
+	const status stat = gBS->HandleProtocol(dev, &gEfiSimpleFileSystemProtocolGuid,
 	                                        reinterpret_cast<void**>(&native));
 
 	if (!stat)
@@ -25,6 +27,7 @@ efi::status efi::find_boot_partition() noexcept
 		return vol.error();
 
 	boot_partition = cstd::move(*vol);
+	boot_device = dev;
 
 	return success;
 }

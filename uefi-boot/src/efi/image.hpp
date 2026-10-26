@@ -5,6 +5,7 @@ extern "C" {
 #include <Library/UefiBootServicesTableLib.h>
 #include <IndustryStandard/PeImage.h>
 #include <Protocol/LoadedImage.h>
+#include <Protocol/DevicePath.h>
 }
 
 #include "obj.hpp"
@@ -103,6 +104,19 @@ namespace efi
 				return cstd::unexpected(buf.error());
 
 			return load(buf.value());
+		}
+
+		// loads via a device path, so LoadedImage ends up with a real DeviceHandle/FilePath
+		static cstd::expected<image, status> load(EFI_DEVICE_PATH_PROTOCOL* const dev_path) noexcept
+		{
+			EFI_HANDLE img_handle = nullptr;
+
+			const status stat = gBS->LoadImage(FALSE, gImageHandle, dev_path, nullptr, 0, &img_handle);
+
+			if (!stat)
+				return cstd::unexpected(stat);
+
+			return image{ img_handle };
 		}
 
 		status start() noexcept

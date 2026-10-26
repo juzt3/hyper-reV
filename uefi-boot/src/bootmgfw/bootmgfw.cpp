@@ -3,6 +3,11 @@
 #include "../efi/file.hpp"
 #include <pe/image.hpp>
 
+extern "C" {
+#include <Library/DevicePathLib.h>
+#include <Library/UefiBootServicesTableLib.h>
+}
+
 #include "../efi/image.hpp"
 #include "../hook/hook.hpp"
 #include "../hook/load_pe_img.hpp"
@@ -89,10 +94,17 @@ namespace
         return efi::success;
 	}
 
-	[[nodiscard]] efi::status start_hooked(const efi::file& boot_file) noexcept
+	[[nodiscard]] efi::status start_hooked() noexcept
 	{
-        // boot_file now holds original contents
-        auto boot_img = efi::image::load(boot_file);
+        EFI_DEVICE_PATH_PROTOCOL* const dev_path = FileDevicePath(
+            efi::boot_device, reinterpret_cast<const CHAR16*>(BOOTMGFW_PATH));
+
+        if (!dev_path)
+            return efi::status{ EFI_OUT_OF_RESOURCES };
+
+        auto boot_img = efi::image::load(dev_path);
+
+        gBS->FreePool(dev_path);
 
         if (!boot_img)
             return boot_img.error();
@@ -119,5 +131,5 @@ efi::status bootmgfw::restore_and_start_hooked()
     if (!stat)
         return stat;
 
-    return start_hooked(*boot_file);
+    return start_hooked();
 }
